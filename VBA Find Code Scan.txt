@@ -1,0 +1,32 @@
+Dim lastHighlightedCell As Range
+
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    Dim cell As Range
+    Dim matchCell As Range
+    Dim ws As Worksheet
+    Set ws = Me
+    
+    ' Bỏ tô màu ô cũ nếu có
+    If Not lastHighlightedCell Is Nothing Then
+        lastHighlightedCell.Interior.ColorIndex = xlNone
+        Set lastHighlightedCell = Nothing
+    End If
+    
+    ' Chỉ xử lý nếu chọn 1 ô, và không phải cột A
+    If Target.Cells.Count = 1 And Target.Column <> 1 Then
+        If Trim(Target.Value) <> "" Then
+            ' Tìm giá trị trùng trong cột A
+            For Each cell In ws.Range("A1:A" & ws.Cells(ws.Rows.Count, "A").End(xlUp).Row)
+                If cell.Value = Target.Value Then
+                    ' Nhảy đến ô trùng và bôi màu vàng đậm
+                    Application.EnableEvents = False
+                    cell.Select
+                    cell.Interior.Color = RGB(255, 255, 0) ' Vàng đậm
+                    Set lastHighlightedCell = cell
+                    Application.EnableEvents = True
+                    Exit For
+                End If
+            Next cell
+        End If
+    End If
+End Sub
